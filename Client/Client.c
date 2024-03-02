@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -82,13 +83,19 @@ char *receive_data(int server_socket) {
 
 
 void download_file(const char *server_address, int server_port, const char *file_name) {
-    char download_path[1024] = "./downloads"; // Specify the directory where you want to save the file
-    char full_path[2048];
-    snprintf(full_path,sizeof(full_path), "%s/%s", download_path, file_name); // Construct the full file path
+    const char *download_folder = "./downloads";
+    struct stat st;
 
+    // Check if the downloads folder exists, if not create it
+    if (stat(download_folder, &st) == -1) {
+        mkdir(download_folder, 0700); // Create the downloads folder with read, write, and execute permissions for owner
+    }
+
+    char full_path[2048];
+    snprintf(full_path, sizeof(full_path), "%s/%s", download_folder, file_name); // Construct the full file path
 
     // Open the file for writing
-    int file_descriptor = open(full_path, O_WRONLY | O_CREAT | O_TRUNC,0666);
+    int file_descriptor = open(full_path, O_WRONLY | O_CREAT | O_TRUNC, 0666);
     if (file_descriptor == -1) {
         perror("open");
         printf("Download failed");
@@ -150,6 +157,7 @@ void download_file(const char *server_address, int server_port, const char *file
         close(server_socket);  
     }
 }
+
 
 
 // Function to upload file to server (with base64 encoding)
