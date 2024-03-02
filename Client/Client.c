@@ -273,18 +273,6 @@ void upload_file(const char *server_address, int server_port, const char *file_n
 }
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <poll.h>
-
-#define BUFFER_SIZE 1024
 
 int main(int argc, char *argv[]) {
     if (argc < 4) {
