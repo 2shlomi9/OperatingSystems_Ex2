@@ -145,11 +145,12 @@ void handle_get_request(int client_socket, const char *root_directory, const cha
 
     // Close the file
     close(file_descriptor);
+    // Update list.txt
+    list_files(root_directory);
 
     // Close connection to client
     close(client_socket);
-    // Update list.txt
-    list_files(root_directory);
+
 
 
     }
@@ -193,6 +194,8 @@ void handle_post_request(int client_socket, const char *root_directory, const ch
     while ((bytes_received = recv(client_socket, buffer, BUFFER_SIZE, 0)) > 0) {
         int decoded_length;
         unsigned char *decoded_data = base64_decode(buffer, bytes_received, &decoded_length);
+        // Update list.txt
+        list_files(root_directory);
         write(file_descriptor, decoded_data, decoded_length);
         printf("bytes recv - %ld ,  the data recv - %s\n", bytes_received,decoded_data);
         free(decoded_data);
@@ -278,6 +281,8 @@ int main(int argc, char *argv[]) {
         close(server_socket);
         exit(EXIT_FAILURE);
     }
+    // Update list.txt
+    list_files(root_directory);
 
     // Listen for connections
     if (listen(server_socket, 10) == -1) {
@@ -287,8 +292,7 @@ int main(int argc, char *argv[]) {
     }
 
     printf("Server listening on port %d\n", server_port);
-    // Update list.txt
-    list_files(root_directory);
+
 
     // Accept connections and handle requests
     while (1) {
